@@ -1,0 +1,21 @@
+[gd_scene load_steps=5 format=3 uid="uid://jrjojvu0bwdr"]
+
+[ext_resource type="Material" uid="uid://dwxatevh4ripq" path="res://Assets/Board/white_square.tres" id="1_vyc26"]
+[ext_resource type="Material" uid="uid://bfoid47q8guxf" path="res://Assets/Board/black_square.tres" id="2_u8fr5"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2virs"]
+material = ExtResource("1_vyc26")
+size = Vector3(1, 0.2, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_fwn5c"]
+material = ExtResource("2_u8fr5")
+size = Vector3(1, 0.2, 1)
+
+[node name="BoardSquares" type="Node3D"]
+
+[node name="WhiteSquare" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_2virs")
+
+[node name="BlackSquare" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.2280525, 0, 0)
+mesh = SubResource("BoxMesh_fwn5c")
