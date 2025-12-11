@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://dwced7jf8j36h"]
+[gd_scene load_steps=2 format=3 uid="uid://dwced7jf8j36h"]
+
+[ext_resource type="Script" uid="uid://c2odau1nvwpyo" path="res://Autoloads/chess_manager.gd" id="1_k4sb1"]
 
 [node name="ChessManager" type="Node"]
+script = ExtResource("1_k4sb1")

@@ -1,23 +1,4 @@
-extends Node3D
-
-enum PieceType {
-	PAWN,
-	ROOK,
-	KNIGHT,
-	BISHOP,
-	QUEEN,
-	KING
-}
-
-enum PieceColor {
-	WHITE,
-	BLACK
-}
-
-@export var type: PieceType
-@export var color: PieceColor
-
-var grid_position: Vector3i = Vector3i.ZERO
+extends Node
 
 
 # Called when the node enters the scene tree for the first time.
