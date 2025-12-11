@@ -3,8 +3,7 @@ extends GridMap
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	for cell in get_used_cells():
-		print(cell)
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

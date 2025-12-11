@@ -10,6 +10,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	pass
 
+
+
 func convert_grid_to_notation(grid_position: Vector3i):
 	# converts grid position to a chess notation string (e.g., (0,0) -> "a1")
 	var file: String = char(97 + grid_position.x) # 'a' is ASCII 97
