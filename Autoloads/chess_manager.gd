@@ -1,5 +1,6 @@
 extends Node
 
+var pieces_by_position: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -21,5 +22,14 @@ func convert_grid_to_notation(grid_position: Vector3i):
 func convert_notation_to_grid(notation: String):
 	# converts chess notation string to grid position (e.g., "a1" -> (0,0))
 	var file: int = int(notation[0].to_ascii_buffer()[0] - 97) # 'a' is ASCII 97
-	var rank: int = int(notation.substr(1, notation.length() - 1)) - 1
+	var rank: int = int(notation.substr(1, notation.length() - 1)) - 8
 	return Vector3i(file, 0, rank)
+
+func register_piece(piece: ChessPiece):
+	# Registers a chess piece in the manager and notes its position.
+	var grid_position: Vector3i = piece.grid_position
+	pieces_by_position[grid_position] = piece
+	print("Registered piece at position: ", grid_position)
+	print(convert_grid_to_notation(grid_position))
+	
+	pass

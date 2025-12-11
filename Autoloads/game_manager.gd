@@ -1,6 +1,7 @@
 extends Node
 
 @onready var chess_manager: Node = $ChessManager
+@onready var combat_manager: Node = $CombatManager
 
 
 

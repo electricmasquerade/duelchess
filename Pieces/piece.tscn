@@ -5,7 +5,7 @@
 [sub_resource type="BoxMesh" id="BoxMesh_2uo6i"]
 size = Vector3(0.5, 0.75, 0.5)
 
-[node name="Piece" type="Node3D"]
+[node name="Piece" type="Node3D" groups=["chess_pieces"]]
 script = ExtResource("1_2uo6i")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]

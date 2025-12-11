@@ -32,7 +32,10 @@ environment = SubResource("Environment_74xf4")
 [node name="Pieces" type="Node3D" parent="."]
 
 [node name="Piece" parent="Pieces" instance=ExtResource("2_glpmc")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.5, 7.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0.5, 0.5)
+
+[node name="Piece2" parent="Pieces" instance=ExtResource("2_glpmc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0.5, 4.5)
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.7071068, 0.7071068, 0, -0.7071068, 0.7071068, 4, 3, 9)

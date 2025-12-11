@@ -1,9 +1,12 @@
-[gd_scene load_steps=3 format=3 uid="uid://ynnwf332wncw"]
+[gd_scene load_steps=4 format=3 uid="uid://ynnwf332wncw"]
 
 [ext_resource type="Script" uid="uid://dx03gyyslatna" path="res://Autoloads/game_manager.gd" id="1_dmm7s"]
 [ext_resource type="PackedScene" uid="uid://dwced7jf8j36h" path="res://Autoloads/chess_manager.tscn" id="2_mx4pe"]
+[ext_resource type="PackedScene" uid="uid://casup8ffcp4wc" path="res://Autoloads/combat_manager.tscn" id="3_mx4pe"]
 
 [node name="GameManager" type="Node"]
 script = ExtResource("1_dmm7s")
 
 [node name="ChessManager" parent="." instance=ExtResource("2_mx4pe")]
+
+[node name="CombatManager" parent="." instance=ExtResource("3_mx4pe")]

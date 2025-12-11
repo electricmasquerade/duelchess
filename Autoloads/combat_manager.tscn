@@ -1,3 +1,6 @@
-[gd_scene format=3 uid="uid://casup8ffcp4wc"]
+[gd_scene load_steps=2 format=3 uid="uid://casup8ffcp4wc"]
+
+[ext_resource type="Script" uid="uid://krrl2lasysnj" path="res://Autoloads/combat_manager.gd" id="1_hvgut"]
 
 [node name="CombatManager" type="Node"]
+script = ExtResource("1_hvgut")
