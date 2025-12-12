@@ -33,7 +33,7 @@ func convert_notation_to_grid(notation: String):
 	var rank: int = 8 - int(notation.substr(1, notation.length() - 1))
 	return Vector3i(file, 0, rank)
 
-func register_piece(piece: ChessPiece):
+func register_piece(piece: Piece):
 	# Registers a chess piece in the manager and notes its position.
 	var grid_position: Vector3i = piece.grid_position
 	pieces_by_position[grid_position] = piece
@@ -41,16 +41,16 @@ func register_piece(piece: ChessPiece):
 	print(convert_grid_to_notation(grid_position))
 	
 
-func find_legal_moves(piece: ChessPiece):
+func find_legal_moves(piece: Piece):
 	# Placeholder for legal move calculation logic.
 	var legal_moves: Array = []
 	var potential_moves: Array = []
 	# Implement specific movement rules based on piece type and color.
 	match piece.type:
-		ChessPiece.PieceType.PAWN:
+		Piece.PieceType.PAWN:
 			# get valid moves for pawn and then filter by color, captures, etc.
 			potential_moves = get_movement_vectors(piece.type)
-			if piece.color == ChessPiece.PieceColor.WHITE:
+			if piece.color == Piece.PieceColor.WHITE:
 				for i in range(potential_moves.size()):
 					potential_moves[i] = -potential_moves[i]
 			for move in potential_moves:
@@ -59,7 +59,7 @@ func find_legal_moves(piece: ChessPiece):
 				if not pieces_by_position.has(target_position):
 					legal_moves.append(target_position)
 			
-		ChessPiece.PieceType.ROOK:
+		Piece.PieceType.ROOK:
 			movement_vectors = get_movement_vectors(piece.type)
 			# check all four directions until blocked
 			for vector in movement_vectors:
@@ -68,7 +68,7 @@ func find_legal_moves(piece: ChessPiece):
 					var target_position = piece.grid_position + vector * step
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
-						var target_piece: ChessPiece = pieces_by_position[target_position]
+						var target_piece: Piece = pieces_by_position[target_position]
 						if target_piece.color != piece.color:
 							legal_moves.append(target_position)
 						break
@@ -76,7 +76,7 @@ func find_legal_moves(piece: ChessPiece):
 					step += 1
 					if step > 7:
 						break
-		ChessPiece.PieceType.KNIGHT:
+		Piece.PieceType.KNIGHT:
 			potential_moves = get_movement_vectors(piece.type)
 			for move in potential_moves:
 				var target_position = piece.grid_position + move
@@ -84,10 +84,10 @@ func find_legal_moves(piece: ChessPiece):
 				if not pieces_by_position.has(target_position):
 					legal_moves.append(target_position)
 				else:
-					var target_piece: ChessPiece = pieces_by_position[target_position]
+					var target_piece: Piece = pieces_by_position[target_position]
 					if target_piece.color != piece.color:
 						legal_moves.append(target_position)
-		ChessPiece.PieceType.BISHOP:
+		Piece.PieceType.BISHOP:
 			# basically same as rook tbh
 			movement_vectors = get_movement_vectors(piece.type)
 			# check all four diagonal directions until blocked
@@ -97,7 +97,7 @@ func find_legal_moves(piece: ChessPiece):
 					var target_position = piece.grid_position + vector * step
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
-						var target_piece: ChessPiece = pieces_by_position[target_position]
+						var target_piece: Piece = pieces_by_position[target_position]
 						if target_piece.color != piece.color:
 							legal_moves.append(target_position)
 						break
@@ -105,7 +105,7 @@ func find_legal_moves(piece: ChessPiece):
 					step += 1
 					if step > 7:
 						break
-		ChessPiece.PieceType.QUEEN:
+		Piece.PieceType.QUEEN:
 			# just rook and bishop
 			movement_vectors = get_movement_vectors(piece.type)
 			# check all eight directions until blocked
@@ -115,7 +115,7 @@ func find_legal_moves(piece: ChessPiece):
 					var target_position = piece.grid_position + vector * step
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
-						var target_piece: ChessPiece = pieces_by_position[target_position]
+						var target_piece: Piece = pieces_by_position[target_position]
 						if target_piece.color != piece.color:
 							legal_moves.append(target_position)
 						break
@@ -123,14 +123,14 @@ func find_legal_moves(piece: ChessPiece):
 					step += 1
 					if step > 7:
 						break
-		ChessPiece.PieceType.KING:
+		Piece.PieceType.KING:
 			for vector in get_movement_vectors(piece.type):
 				var target_position = piece.grid_position + vector
 				# check for target validity
 				if not pieces_by_position.has(target_position):
 					legal_moves.append(target_position)
 				else:
-					var target_piece: ChessPiece = pieces_by_position[target_position]
+					var target_piece: Piece = pieces_by_position[target_position]
 					if target_piece.color != piece.color:
 						legal_moves.append(target_position)
 			
@@ -138,25 +138,49 @@ func find_legal_moves(piece: ChessPiece):
 	legal_moves = legal_moves.filter(func(pos):
 		return pos.x >= 0 and pos.x < 8 and pos.z >= 0 and pos.z < 8
 	)
+	# reset values of y to 0
+	for i in range(legal_moves.size()):
+		legal_moves[i].y = 0
 	return legal_moves
 
 
-func get_movement_vectors(type: ChessPiece.PieceType):
+func get_movement_vectors(type: Piece.PieceType):
 	# Returns movement vectors for the given piece type.
 	match type:
-		ChessPiece.PieceType.PAWN:
+		Piece.PieceType.PAWN:
 			return [Vector3i(0, 0, 1)]
-		ChessPiece.PieceType.ROOK:
+		Piece.PieceType.ROOK:
 			return [Vector3i(1, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, -1)]
-		ChessPiece.PieceType.KNIGHT:
+		Piece.PieceType.KNIGHT:
 			return [Vector3i(1, 0, 2), Vector3i(1, 0, -2), Vector3i(-1, 0, 2), Vector3i(-1, 0, -2),
 					Vector3i(2, 0, 1), Vector3i(2, 0, -1), Vector3i(-2, 0, 1), Vector3i(-2, 0, -1)]
-		ChessPiece.PieceType.BISHOP:
+		Piece.PieceType.BISHOP:
 			return [Vector3i(1, 0, 1), Vector3i(1, 0, -1), Vector3i(-1, 0, 1), Vector3i(-1, 0, -1)]
-		ChessPiece.PieceType.QUEEN:
+		Piece.PieceType.QUEEN:
 			return [Vector3i(1, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, -1),
 					Vector3i(1, 0, 1), Vector3i(1, 0, -1), Vector3i(-1, 0, 1), Vector3i(-1, 0, -1)]
-		ChessPiece.PieceType.KING:
+		Piece.PieceType.KING:
 			return [Vector3i(1, 0, 0), Vector3i(-1, 0, 0), Vector3i(0, 0, 1), Vector3i(0, 0, -1),
 					Vector3i(1, 0, 1), Vector3i(1, 0, -1), Vector3i(-1, 0, 1), Vector3i(-1, 0, -1)]
 	return []
+
+func end_turn():
+	# Switches the current turn to the other player.
+	if current_turn == Turn.WHITE:
+		current_turn = Turn.BLACK
+	else:
+		current_turn = Turn.WHITE
+	print("Turn ended. Current turn: ", current_turn)
+	
+func move_piece(piece: Piece, target_position: Vector3i):
+	# Moves a piece to a new position if the move is legal.
+	var legal_moves: Array = find_legal_moves(piece)
+	# TODO: handle captures
+	if target_position in legal_moves:
+		# Update internal tracking
+		pieces_by_position.erase(piece.grid_position)
+		piece.grid_position = target_position
+		pieces_by_position[target_position] = piece
+		print("Moved piece to: ", target_position)
+	else:
+		print("Illegal move attempted to: ", target_position)

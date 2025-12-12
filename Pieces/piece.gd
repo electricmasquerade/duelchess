@@ -1,5 +1,5 @@
 extends Node3D
-class_name ChessPiece
+class_name Piece
 
 var black_material_id = "uid://8s4m0g2qja6f"
 var white_material_id = "uid://pik18uq4ywa7"
@@ -30,15 +30,14 @@ var highlighted := false:
 		else:
 			highlight.visible = false
 
-var selected := false: 
+var selected := false:
 	set(value):
-		if value:
-			highlight.visible = true
-		else:
-			highlight.visible = highlighted
+		selected = value
+		if not value:
+			highlighted = false
 @onready var highlight: MeshInstance3D = $Highlight
 
-signal piece_focus(piece: ChessPiece, focused: bool)
+signal hovered(piece: Piece, focused: bool)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if color == PieceColor.BLACK:
@@ -57,15 +56,12 @@ func _process(delta: float) -> void:
 
 
 func _on_mouse_entered() -> void:
-	if selected:
-		return
-	highlighted = true
-	# emit signal to highlight legal moves in board/chess manager
-	piece_focus.emit(self, true)
+	if not selected:
+		hovered.emit(self, true)
+		highlighted = true
 	
 
 func _on_mouse_exited() -> void:
-	if selected:
-		return
-	highlighted = false
-	piece_focus.emit(self, false)
+	if not selected:
+		hovered.emit(self, false)
+		highlighted = false

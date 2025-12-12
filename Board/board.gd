@@ -1,25 +1,25 @@
 extends Node3D
-
+# Note: let chess manager update all positions, just move pieces visually here
 @onready var grid: GridMap = $BoardGrid
 var pieces: Array = []
 var markers: Array = []
 
-var selected_piece: ChessPiece = null
+var selected_piece: Piece = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# find all pieces, add them to array, give them their grid position
 	for node in get_tree().get_nodes_in_group("chess_pieces"):
 		#print(node)
-		if node is ChessPiece:
-			var piece: ChessPiece = node
+		if node is Piece:
+			var piece: Piece = node
 			pieces.append(piece)
 			var grid_position: Vector3i = grid.local_to_map(piece.global_transform.origin)
 			piece.grid_position = grid_position
 			# Register piece in chess manager
 			GameManager.chess_manager.register_piece(piece)
 			print("Piece at grid position: ", grid_position)
-			piece.piece_focus.connect(piece_selected)
+			piece.hovered.connect(_on_piece_hovered)
 			
 
 
@@ -41,21 +41,43 @@ func _physics_process(delta: float) -> void:
 		query.collide_with_areas = true
 	
 		var result = space_state.intersect_ray(query)
-		print(result)
+		#print(result)
 		# select piece if ray hits one
 		if result and result.has("collider"):
 			var collider = result["collider"]
-			if collider is ChessPiece:
-				var piece: ChessPiece = collider
-				piece.selected = not piece.selected
-				if piece.selected:
-					selected_piece = piece
-				else:
-					selected_piece = null
+			print(collider)
+			if collider is Piece:
+				_on_piece_clicked(collider)
+				
+			elif collider is GridMap:
 
-				piece.piece_focus.emit(piece, piece.selected)
+				# get square and check if it is valid move for current piece
+				if selected_piece != null:
+					var grid_position: Vector3i = grid.local_to_map(result["position"])
+					var legal_moves: Array = GameManager.chess_manager.find_legal_moves(selected_piece)
+					print(grid_position)
+					print(legal_moves)
+					if grid_position in legal_moves:
+						print("legal")
+						# move pieces and update chess manager
+						GameManager.chess_manager.move_piece(selected_piece, grid_position)
+						#update piece position visually
+						var world_position: Vector3 = grid.map_to_local(grid_position) + Vector3(0, 0.5, 0)
+						selected_piece.global_transform.origin = world_position
+						selected_piece.grid_position = grid_position
+						#end turn
+						#GameManager.chess_manager.end_turn()
+						deselect_current_piece()
+						
+				#deselect current piece
+					deselect_current_piece()
+			else:
+				deselect_current_piece()
+
+
 
 func highlight_legal_moves(moves: Array) -> void:
+	clear_move_markers()
 	# place markers on the board for each legal move
 	for move in moves:
 		#create placeholder sphere
@@ -71,14 +93,41 @@ func highlight_legal_moves(moves: Array) -> void:
 		marker.global_transform.origin = world_position
 		markers.append(marker)
 
-func piece_selected(piece: ChessPiece, focus: bool) -> void:
-	if focus:
-		piece.highlighted = true
-		var moves = GameManager.chess_manager.find_legal_moves(piece)
+func _on_piece_clicked(piece: Piece) -> void:
+	print("Piece clicked: ", piece)
+	# Deselect current piece if any
+	if selected_piece == piece:
+		deselect_current_piece()
+		return
+	
+	if selected_piece != null:
+		deselect_current_piece()
+	# Select new piece
+	selected_piece = piece
+	piece.selected = true
+	piece.highlighted = true
+	# Find and highlight legal moves
+	var legal_moves: Array = GameManager.chess_manager.find_legal_moves(piece)
+	highlight_legal_moves(legal_moves)
+
+func deselect_current_piece() -> void:
+	if selected_piece != null:
+		selected_piece.selected = false
+		selected_piece.highlighted = false
+		selected_piece = null
+	clear_move_markers()
+	
+func clear_move_markers() -> void:
+	for marker in markers:
+		marker.queue_free()
+	markers.clear()
+	
+func _on_piece_hovered(piece: Piece, focused: bool) -> void:
+	# Handle piece hover events if needed
+	if selected_piece != null:
+		return
+	if focused:
+		var moves: Array = GameManager.chess_manager.find_legal_moves(piece)
 		highlight_legal_moves(moves)
 	else:
-		piece.highlighted = false
-		# remove all markers
-		for marker in markers:
-			marker.queue_free()
-		markers.clear()
+		clear_move_markers()
