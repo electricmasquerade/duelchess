@@ -1,5 +1,11 @@
 extends Node
 
+enum Turn{
+	WHITE,
+	BLACK
+}
+
+var current_turn := Turn.WHITE
 var pieces_by_position: Dictionary = {}
 # store movement vectors for each piece type
 var movement_vectors

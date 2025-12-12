@@ -32,7 +32,7 @@ var highlighted := false:
 	
 @onready var highlight: MeshInstance3D = $Highlight
 
-
+signal piece_focus(piece: ChessPiece, focused: bool)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if color == PieceColor.BLACK:
@@ -42,7 +42,6 @@ func _ready() -> void:
 		var material = load(white_material_id)
 		$Mesh.material_override = material
 	highlight.visible = false
-	# connect mouse entered and exit to highlight setter
 
 
 
@@ -53,7 +52,10 @@ func _process(delta: float) -> void:
 
 func _on_mouse_entered() -> void:
 	highlighted = true
-
+	# emit signal to highlight legal moves in board/chess manager
+	piece_focus.emit(self, true)
+	
 
 func _on_mouse_exited() -> void:
 	highlighted = false
+	piece_focus.emit(self, false)

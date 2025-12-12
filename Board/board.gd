@@ -2,6 +2,7 @@ extends Node3D
 
 @onready var grid: GridMap = $BoardGrid
 var pieces: Array = []
+var markers: Array = []
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# find all pieces, add them to array, give them their grid position
@@ -15,24 +16,9 @@ func _ready() -> void:
 			# Register piece in chess manager
 			GameManager.chess_manager.register_piece(piece)
 			print("Piece at grid position: ", grid_position)
-	# check legal moves for all pieces
-	for piece in pieces:
-		var moves = GameManager.chess_manager.find_legal_moves(piece)
-		print("Legal moves for piece at ", piece.grid_position, ": ", moves)
-		# place markers on the board for each legal move
-		for move in moves:
-			#create placeholder sphere
-			var marker: MeshInstance3D = MeshInstance3D.new()
-			marker.mesh = SphereMesh.new()
-			marker.scale = Vector3.ONE * 0.2
-			var material: StandardMaterial3D = StandardMaterial3D.new()
-			material.albedo_color = Color(0.0, 1.0, 0.0, 0.263)
-			marker.material_override = material
-			# position marker
-			var world_position: Vector3 = grid.map_to_local(move) + Vector3(0, 0.1, 0)
-			add_child(marker)
-			marker.global_transform.origin = world_position
+			piece.piece_focus.connect(piece_selected)
 			
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -53,10 +39,39 @@ func _physics_process(delta: float) -> void:
 	
 		var result = space_state.intersect_ray(query)
 		print(result)
-#		# check if piece is selected and highlight it
-#		if result.size() > 0:
-#			var collider = result["collider"]
-#			if collider is ChessPiece:
-#				var piece: ChessPiece = collider
-#				piece.highlighted = true
-#				print("Piece selected at grid position: ", piece.grid_position)
+		# check if piece is selected and highlight it
+		if result.size() > 0:
+			var collider = result["collider"]
+			if collider is ChessPiece:
+				var piece: ChessPiece = collider
+				piece.highlighted = true
+				var moves = GameManager.chess_manager.find_legal_moves(piece)
+				highlight_legal_moves(moves)
+
+func highlight_legal_moves(moves: Array) -> void:
+	# place markers on the board for each legal move
+	for move in moves:
+		#create placeholder sphere
+		var marker: MeshInstance3D = MeshInstance3D.new()
+		marker.mesh = SphereMesh.new()
+		marker.scale = Vector3.ONE * 0.2
+		var material: StandardMaterial3D = StandardMaterial3D.new()
+		material.albedo_color = Color(0.0, 1.0, 0.0, 0.263)
+		marker.material_override = material
+		# position marker
+		var world_position: Vector3 = grid.map_to_local(move) + Vector3(0, 0.1, 0)
+		add_child(marker)
+		marker.global_transform.origin = world_position
+		markers.append(marker)
+
+func piece_selected(piece: ChessPiece, focus: bool) -> void:
+	if focus:
+		piece.highlighted = true
+		var moves = GameManager.chess_manager.find_legal_moves(piece)
+		highlight_legal_moves(moves)
+	else:
+		piece.highlighted = false
+		# remove all markers
+		for marker in markers:
+			marker.queue_free()
+		markers.clear()
