@@ -29,7 +29,13 @@ var highlighted := false:
 			highlight.visible = true
 		else:
 			highlight.visible = false
-	
+
+var selected := false: 
+	set(value):
+		if value:
+			highlight.visible = true
+		else:
+			highlight.visible = highlighted
 @onready var highlight: MeshInstance3D = $Highlight
 
 signal piece_focus(piece: ChessPiece, focused: bool)
@@ -51,11 +57,15 @@ func _process(delta: float) -> void:
 
 
 func _on_mouse_entered() -> void:
+	if selected:
+		return
 	highlighted = true
 	# emit signal to highlight legal moves in board/chess manager
 	piece_focus.emit(self, true)
 	
 
 func _on_mouse_exited() -> void:
+	if selected:
+		return
 	highlighted = false
 	piece_focus.emit(self, false)

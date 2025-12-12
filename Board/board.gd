@@ -3,6 +3,9 @@ extends Node3D
 @onready var grid: GridMap = $BoardGrid
 var pieces: Array = []
 var markers: Array = []
+
+var selected_piece: ChessPiece = null
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# find all pieces, add them to array, give them their grid position
@@ -39,14 +42,18 @@ func _physics_process(delta: float) -> void:
 	
 		var result = space_state.intersect_ray(query)
 		print(result)
-		# check if piece is selected and highlight it
-		if result.size() > 0:
+		# select piece if ray hits one
+		if result and result.has("collider"):
 			var collider = result["collider"]
 			if collider is ChessPiece:
 				var piece: ChessPiece = collider
-				piece.highlighted = true
-				var moves = GameManager.chess_manager.find_legal_moves(piece)
-				highlight_legal_moves(moves)
+				piece.selected = not piece.selected
+				if piece.selected:
+					selected_piece = piece
+				else:
+					selected_piece = null
+
+				piece.piece_focus.emit(piece, piece.selected)
 
 func highlight_legal_moves(moves: Array) -> void:
 	# place markers on the board for each legal move
