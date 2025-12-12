@@ -53,3 +53,10 @@ func _physics_process(delta: float) -> void:
 	
 		var result = space_state.intersect_ray(query)
 		print(result)
+#		# check if piece is selected and highlight it
+#		if result.size() > 0:
+#			var collider = result["collider"]
+#			if collider is ChessPiece:
+#				var piece: ChessPiece = collider
+#				piece.highlighted = true
+#				print("Piece selected at grid position: ", piece.grid_position)

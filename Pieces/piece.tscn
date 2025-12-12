@@ -1,20 +1,33 @@
-[gd_scene load_steps=4 format=3 uid="uid://bf2kjmnxa6kl4"]
+[gd_scene load_steps=5 format=3 uid="uid://bf2kjmnxa6kl4"]
 
 [ext_resource type="Script" uid="uid://bwpfas0w2vak3" path="res://Pieces/piece.gd" id="1_2uo6i"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_2uo6i"]
-size = Vector3(0.5, 0.75, 0.5)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_2uo6i"]
 size = Vector3(0.5, 0.8, 0.5)
 
-[node name="Piece" type="Node3D" groups=["chess_pieces"]]
+[sub_resource type="BoxMesh" id="BoxMesh_2uo6i"]
+size = Vector3(0.52, 0.77, 0.52)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2uo6i"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.13333334)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 2.0
+
+[node name="Piece" type="Area3D" groups=["chess_pieces"]]
 script = ExtResource("1_2uo6i")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_2uo6i")
 
 [node name="Mesh" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_2uo6i")
 
-[node name="Area3D" type="Area3D" parent="."]
+[node name="Highlight" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("StandardMaterial3D_2uo6i")
+mesh = SubResource("BoxMesh_2uo6i")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
-shape = SubResource("BoxShape3D_2uo6i")
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
