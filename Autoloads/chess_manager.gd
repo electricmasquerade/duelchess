@@ -87,6 +87,7 @@ func find_legal_moves(piece: Piece):
 						if target_piece.color != piece.color:
 							legal_moves.append(target_position)
 						break
+						
 					legal_moves.append(target_position)
 					step += 1
 					
