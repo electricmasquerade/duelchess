@@ -6,6 +6,7 @@ enum Turn{
 }
 
 var current_turn := Turn.WHITE
+var turn_num : int = 0
 var pieces_by_position: Dictionary = {}
 # store movement vectors for each piece type
 var movement_vectors
@@ -42,6 +43,9 @@ func register_piece(piece: Piece):
 	
 
 func find_legal_moves(piece: Piece):
+	print("=== Finding legal moves for ", piece.type, " at ", piece.grid_position, " ===")
+	print("All pieces positions: ", pieces_by_position.keys())
+
 	# Placeholder for legal move calculation logic.
 	var legal_moves: Array = []
 	var potential_moves: Array = []
@@ -53,19 +57,30 @@ func find_legal_moves(piece: Piece):
 			if piece.color == Piece.PieceColor.WHITE:
 				for i in range(potential_moves.size()):
 					potential_moves[i] = -potential_moves[i]
+					# add potential moves for first move (two squares forward)
+				if not piece.has_moved:
+					potential_moves.append(Vector3i(0, 0, -2))
+			else:
+				# black pawns move "down" the board
+				# add potential moves for first move (two squares forward)
+				if not piece.has_moved:
+					potential_moves.append(Vector3i(0, 0, 2))
 			for move in potential_moves:
 				var target_position = piece.grid_position + move
+				
 				# TODO: check for target validity
 				if not pieces_by_position.has(target_position):
 					legal_moves.append(target_position)
 			
 		Piece.PieceType.ROOK:
 			movement_vectors = get_movement_vectors(piece.type)
-			# check all four directions until blocked
+			# check all four directions until blocked by either color piece
 			for vector in movement_vectors:
 				var step: int = 1
-				while true:
+				while step <= 7:
 					var target_position = piece.grid_position + vector * step
+					if target_position.x < 0 or target_position.x >= 8 or target_position.z < 0 or target_position.z >= 8:
+						break
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
 						var target_piece: Piece = pieces_by_position[target_position]
@@ -74,8 +89,7 @@ func find_legal_moves(piece: Piece):
 						break
 					legal_moves.append(target_position)
 					step += 1
-					if step > 7:
-						break
+					
 		Piece.PieceType.KNIGHT:
 			potential_moves = get_movement_vectors(piece.type)
 			for move in potential_moves:
@@ -93,8 +107,10 @@ func find_legal_moves(piece: Piece):
 			# check all four diagonal directions until blocked
 			for vector in movement_vectors:
 				var step: int = 1
-				while true:
+				while step <= 7:
 					var target_position = piece.grid_position + vector * step
+					if target_position.x < 0 or target_position.x >= 8 or target_position.z < 0 or target_position.z >= 8:
+						break
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
 						var target_piece: Piece = pieces_by_position[target_position]
@@ -103,15 +119,14 @@ func find_legal_moves(piece: Piece):
 						break
 					legal_moves.append(target_position)
 					step += 1
-					if step > 7:
-						break
+					
 		Piece.PieceType.QUEEN:
 			# just rook and bishop
 			movement_vectors = get_movement_vectors(piece.type)
 			# check all eight directions until blocked
 			for vector in movement_vectors:
 				var step: int = 1
-				while true:
+				while step <= 7:
 					var target_position = piece.grid_position + vector * step
 					if pieces_by_position.has(target_position):
 						# check if piece at target is opponent's piece for capture
@@ -182,5 +197,6 @@ func move_piece(piece: Piece, target_position: Vector3i):
 		piece.grid_position = target_position
 		pieces_by_position[target_position] = piece
 		print("Moved piece to: ", target_position)
+		piece.has_moved = true
 	else:
 		print("Illegal move attempted to: ", target_position)

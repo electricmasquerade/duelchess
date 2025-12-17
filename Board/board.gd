@@ -64,7 +64,7 @@ func _physics_process(delta: float) -> void:
 						#update piece position visually
 						var world_position: Vector3 = grid.map_to_local(grid_position) + Vector3(0, 0.5, 0)
 						selected_piece.global_transform.origin = world_position
-						selected_piece.grid_position = grid_position
+						#selected_piece.grid_position = grid_position
 						#end turn
 						#GameManager.chess_manager.end_turn()
 						deselect_current_piece()

@@ -22,6 +22,7 @@ enum PieceColor {
 @export var color: PieceColor
 
 var grid_position: Vector3i = Vector3i.ZERO
+var has_moved: bool = false
 
 var highlighted := false:
 	set(value):
@@ -35,6 +36,7 @@ var selected := false:
 		selected = value
 		if not value:
 			highlighted = false
+			
 @onready var highlight: MeshInstance3D = $Highlight
 
 signal hovered(piece: Piece, focused: bool)
