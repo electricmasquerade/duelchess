@@ -13,3 +13,7 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+func on_capture_initiated(attacking_piece: Piece, defending_piece: Piece):
+	print("Capture initiated between ", attacking_piece, " and ", defending_piece)
+	#combat_manager.start_combat(attacking_piece, defending_piece)

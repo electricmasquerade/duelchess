@@ -11,8 +11,11 @@ var pieces_by_position: Dictionary = {}
 # store movement vectors for each piece type
 var movement_vectors
 
+signal capture_initiated(attacking_piece: Piece, defending_piece: Piece)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	#connect to game manager
+	capture_initiated.connect(GameManager.on_capture_initiated)
 	pass # Replace with function body.
 
 
@@ -43,8 +46,8 @@ func register_piece(piece: Piece):
 	
 
 func find_legal_moves(piece: Piece):
-	print("=== Finding legal moves for ", piece.type, " at ", piece.grid_position, " ===")
-	print("All pieces positions: ", pieces_by_position.keys())
+	#print("=== Finding legal moves for ", piece.type, " at ", piece.grid_position, " ===")
+	#print("All pieces positions: ", pieces_by_position.keys())
 
 	# Placeholder for legal move calculation logic.
 	var legal_moves: Array = []
@@ -68,7 +71,6 @@ func find_legal_moves(piece: Piece):
 			for move in potential_moves:
 				var target_position = piece.grid_position + move
 				
-				# TODO: check for target validity
 				if not pieces_by_position.has(target_position):
 					legal_moves.append(target_position)
 			
@@ -193,6 +195,14 @@ func move_piece(piece: Piece, target_position: Vector3i):
 	var legal_moves: Array = find_legal_moves(piece)
 	# TODO: handle captures
 	if target_position in legal_moves:
+		#check for capture first
+		if pieces_by_position.has(target_position):
+			var captured_piece: Piece = pieces_by_position[target_position]
+			capture_initiated.emit(piece, captured_piece)
+			# remove captured piece from tracking
+			pieces_by_position.erase(target_position)
+			captured_piece.queue_free()
+			print("Captured piece at: ", target_position)
 		# Update internal tracking
 		pieces_by_position.erase(piece.grid_position)
 		piece.grid_position = target_position

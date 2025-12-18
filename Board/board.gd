@@ -15,6 +15,8 @@ func _ready() -> void:
 			var piece: Piece = node
 			pieces.append(piece)
 			var grid_position: Vector3i = grid.local_to_map(piece.global_transform.origin)
+			# set grid position to zero y
+			grid_position.y = 0
 			piece.grid_position = grid_position
 			# Register piece in chess manager
 			GameManager.chess_manager.register_piece(piece)

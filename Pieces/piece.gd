@@ -1,8 +1,8 @@
 extends Node3D
 class_name Piece
 
-var black_material_id = "uid://8s4m0g2qja6f"
-var white_material_id = "uid://pik18uq4ywa7"
+@export var black_material : Material
+@export var white_material : Material
 
 enum PieceType {
 	PAWN,
@@ -43,11 +43,13 @@ signal hovered(piece: Piece, focused: bool)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	if color == PieceColor.BLACK:
-		var material = load(black_material_id)
-		$Mesh.material_override = material
+		#var material = load(black_material)
+		#$Mesh.material_override = material
+		$Mesh.material_override = black_material
 	else:
-		var material = load(white_material_id)
-		$Mesh.material_override = material
+		#var material = load(white_material)
+		#$Mesh.material_override = material
+		$Mesh.material_override = white_material
 	highlight.visible = false
 
 
